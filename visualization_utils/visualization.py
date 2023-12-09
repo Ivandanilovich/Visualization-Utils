@@ -54,6 +54,9 @@ def parse_boxes(boxes, image_shape):
             boxes = boxes[0]
         else:
             raise Exception('batch_size is more than 1')
+    
+    if len(boxes.shape) == 1:
+        boxes = boxes[None]
 
     if np.logical_and(boxes >= 0, boxes <= 1).all():
         boxes[:, 0] *= w
@@ -73,7 +76,7 @@ def parse_masks(masks, image_shape, mask_threshold):
     if len(masks.shape) == 3:
         pass
     elif len(masks.shape) == 2:
-        pass
+        masks = masks[None]
     else:
         raise Exception('format')
     if np.unique(masks).shape[0] > 2:
@@ -130,7 +133,7 @@ def draw_on_image(image, masks=None, boxes=None, labels=None,
 
     if masks is not None:
         masks = parse_masks(masks, image.shape, mask_threshold)
-        n = boxes.shape[0]
+        n = masks.shape[0]
 
     for i in range(n):
         if boxes is not None:
