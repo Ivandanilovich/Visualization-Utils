@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "visualization-utils"
+version = "0.1.0"
+description = ""
+authors = ["Ivandanilovich <ivandanilovich99@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9"
+opencv-python = "^4.8.1.78"
+numpy = "^1.26.2"
+scikit-image = "^0.22.0"
+einops = "^0.7.0"
+
+[tool.poetry.group.dev.dependencies]
+matplotlib = "^3.8.2"
+plotly = "^5.18.0"
+jupyter = "^1.0.0"
+seaborn = "^0.13.0"
+torch = "^2.1.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
