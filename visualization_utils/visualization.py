@@ -116,15 +116,45 @@ def _vis_mask(image, mask, is_countur, is_bbox, alpha, color, thickness):
 
     return image
 
+def skeleton_map_to_edges(bonesmap, excluded_bones=[]):
+    l={}
+    for i,j in bonesmap.items():
+        if i in excluded_bones:  # IK bones
+            continue
+        l[i] = len(l)
 
-def draw_on_image(image, masks=None, boxes=None, labels=None,
+    edges=[]
+    for i,j in bonesmap.items():
+        if i in excluded_bones:  # IK bones
+            continue
+        for n in j:
+            if n in excluded_bones:  # IK bones
+                continue
+            edges.append([l[i],l[n]])
+    return edges
+
+def vis_skeleton(image, points, edges, color):
+    for i,j in edges:
+        cv2.line(image, (int(points[i][0]), int(points[i][1])), (int(points[j][0]), int(points[j][1])), color, 1)
+    for i in range(len(points)):
+        cv2.circle(image, (int(points[i][0]), int(points[i][1])), 5, color, -1)
+    return image
+
+def parse_skeletons(skeletons, image_shape):
+    h, w, c = image_shape
+    return skeletons
+
+
+def draw_on_image(image, masks=None, boxes=None, skeletons=None, 
+                  labels=None,
+                  edges = None,
                   color=None, mask_threshold=0.5,
                   boxes_format='xyxy', thickness=1,
                   is_countur=False, is_mask_box=False,
                   ):
     image = parse_image(image)
 
-    if masks is None and boxes is None:
+    if masks is None and boxes is None and skeletons is None:
         raise Exception('no data to display')
 
     if boxes is not None:
@@ -134,6 +164,10 @@ def draw_on_image(image, masks=None, boxes=None, labels=None,
     if masks is not None:
         masks = parse_masks(masks, image.shape, mask_threshold)
         n = masks.shape[0]
+
+    if skeletons is not None:
+        skeletons = parse_skeletons(skeletons, image.shape)
+        n = skeletons.shape[0]
 
     for i in range(n):
         if boxes is not None:
@@ -145,5 +179,9 @@ def draw_on_image(image, masks=None, boxes=None, labels=None,
             image = _vis_mask(image, masks[i], is_countur=is_countur, is_bbox=is_mask_box,
                               alpha=0.5, color=COLOR_PALETTE[i % len(COLOR_PALETTE)],
                               thickness=thickness)
+            
+        if skeletons is not None:
+            image = vis_skeleton(image, skeletons[i], 
+                                 edges=edges, color=COLOR_PALETTE[i % len(COLOR_PALETTE)])
 
     return image
