@@ -86,7 +86,7 @@ def parse_masks(masks, image_shape, mask_threshold):
 
 
 def vis_box(image, box, color, thickness):
-    xmin, ymin, xmax, ymax = box
+    xmin, ymin, xmax, ymax, *_ = box
     image = cv2.rectangle(image, (int(xmin), int(ymin)),
                           (int(xmax), int(ymax)), color, thickness)
     return image
