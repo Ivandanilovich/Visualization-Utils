@@ -133,11 +133,11 @@ def skeleton_map_to_edges(bonesmap, excluded_bones=[]):
             edges.append([l[i],l[n]])
     return edges
 
-def vis_skeleton(image, points, edges, color):
+def vis_skeleton(image, points, edges, color, skeleton_point_size = 2):
     for i,j in edges:
         cv2.line(image, (int(points[i][0]), int(points[i][1])), (int(points[j][0]), int(points[j][1])), color, 1)
     for i in range(len(points)):
-        cv2.circle(image, (int(points[i][0]), int(points[i][1])), 5, color, -1)
+        cv2.circle(image, (int(points[i][0]), int(points[i][1])), skeleton_point_size, color, -1)
     return image
 
 def parse_skeletons(skeletons, image_shape):
@@ -151,6 +151,7 @@ def draw_on_image(image, masks=None, boxes=None, skeletons=None,
                   color=None, mask_threshold=0.5,
                   boxes_format='xyxy', thickness=1,
                   is_countur=False, is_mask_box=False,
+                  skeleton_point_size = 2,
                   ):
     image = parse_image(image)
 
@@ -182,6 +183,6 @@ def draw_on_image(image, masks=None, boxes=None, skeletons=None,
             
         if skeletons is not None:
             image = vis_skeleton(image, skeletons[i], 
-                                 edges=edges, color=COLOR_PALETTE[i % len(COLOR_PALETTE)])
+                                 edges=edges, color=COLOR_PALETTE[i % len(COLOR_PALETTE)], skeleton_point_size=skeleton_point_size)
 
     return image
