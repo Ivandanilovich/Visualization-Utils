@@ -137,7 +137,11 @@ def vis_skeleton(image, points, edges, color, skeleton_point_size = 2):
     for i,j in edges:
         cv2.line(image, (int(points[i][0]), int(points[i][1])), (int(points[j][0]), int(points[j][1])), color, 1)
     for i in range(len(points)):
-        cv2.circle(image, (int(points[i][0]), int(points[i][1])), skeleton_point_size, color, -1)
+        vis_visibility = -1
+        if len(points[i]) >=3:
+            vis_visibility = 1 if points[i][-1]==0 else -1
+            cv2.circle(image, (int(points[i][0]), int(points[i][1])), skeleton_point_size, (255,255,255), -1)
+        cv2.circle(image, (int(points[i][0]), int(points[i][1])), skeleton_point_size, color, vis_visibility)
     return image
 
 def parse_skeletons(skeletons, image_shape):
