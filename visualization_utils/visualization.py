@@ -1,10 +1,11 @@
 import einops
+from matplotlib import pyplot as plt
 import numpy as np
 import torch
 import cv2
 import copy
 from skimage.measure import find_contours
-from .color import COLOR_PALETTE
+from visualization_utils.color import COLOR_PALETTE
 
 
 def parse_tensor(func):
@@ -134,8 +135,9 @@ def skeleton_map_to_edges(bonesmap, excluded_bones=[]):
     return edges
 
 def vis_skeleton(image, points, edges, color, skeleton_point_size = 2):
-    for i,j in edges:
-        cv2.line(image, (int(points[i][0]), int(points[i][1])), (int(points[j][0]), int(points[j][1])), color, 1)
+    if edges is not None:
+        for i,j in edges:
+            cv2.line(image, (int(points[i][0]), int(points[i][1])), (int(points[j][0]), int(points[j][1])), color, 1)
     for i in range(len(points)):
         vis_visibility = -1
         if len(points[i]) >=3:
@@ -190,3 +192,22 @@ def draw_on_image(image, masks=None, boxes=None, skeletons=None,
                                  edges=edges, color=COLOR_PALETTE[i % len(COLOR_PALETTE)], skeleton_point_size=skeleton_point_size)
 
     return image
+
+
+
+if __name__ == '__main__':
+    image = np.zeros((400, 400, 3), dtype=np.uint8)  # Example black image
+    skeletons = np.array([[[50, 50, 1], [100, 100, 2], [200, 200, 0]], 
+                          [[300, 300, 0], [350, 250, 1], [350, 259, 0]]])
+    mask = np.zeros((400, 400), dtype=np.uint8)
+    mask[100:200, 100:200] = 1
+    mask[250:350, 250:350] = 2
+    boxes = np.array([(50, 50, 150, 150), (300, 300, 350, 350)])
+    mask = np.array([i==mask for i in np.unique(mask) if i != 0])
+
+    image = draw_on_image(image, 
+                          skeletons=skeletons, 
+                          masks=mask, 
+                          boxes=boxes, 
+                          thickness=2, is_mask_box=True, skeleton_point_size=5)
+    plt.imshow(image); plt.show()
